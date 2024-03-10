@@ -51,6 +51,7 @@ exports.genre_create_post = [
         genre: genre,
         errors: errors.array()
       })
+      return;
     } else {
       const genreExists = await Genre.findOne({ name: name }).exec();
       if (genreExists) {
@@ -64,17 +65,72 @@ exports.genre_create_post = [
 ];
 
 exports.genre_delete_get = asyncHandler(async (req, res, next) => {
+  const genre = await Genre.findOne({ slug: req.params.id }).exec();
 
+  if (genre === null) {
+    res.redirect('/genres');
+  }
+
+  res.render('genre/genre_delete', {
+    title: 'Delete Genre',
+    genre: genre
+  })
 });
 
 exports.genre_delete_post = asyncHandler(async (req, res, next) => {
-  
+  const [genre, applicationsInGenre] = await Promise.all([
+    Genre.findOne({ slug: req.params.id }).exec(),
+    Application.find({ 'genre.slug': req.params.id }, "name description").exec()
+  ])
+
+  if (applicationsInGenre) {
+    res.render('genre/genre_delete', {
+      title: 'Delete Genre',
+      genre: genre,
+      applications: applicationsInGenre
+    });
+  } else {
+    await Genre.findOneAndDelete({ slug: req.params.id });
+    res.redirect('/genres');
+  }
 });
 
 exports.genre_update_get = asyncHandler(async (req, res, next) => {
+  const genre = await Genre.findOne({ slug: req.params.id });
 
+  if (genre === null) {
+    const err = new Error('Genre not found');
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render('genre/genre_form', {
+    title: 'Update Genre',
+    genre: genre
+  })
 });
 
-exports.genre_update_post = asyncHandler(async (req, res, next) => {
-  
-});
+exports.genre_update_post = [
+  body("name", "Genre must contain at least 2 characters")
+    .trim()
+    .isLength({ min: 2 })
+    .escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const name = req.body.name;
+    const slug = createSlug(name);
+    const genre = new Genre({ name: name, slug: slug });
+    if (!errors.isEmpty()) {
+      res.render("genre/genre_form", {
+        title: "Update Genre",
+        genre: genre,
+        errors: errors.array()
+      })
+      return;
+    } else {
+      const updatedGenre = await Genre.findOneAndUpdate({ slug: slug }, genre, {})
+      res.redirect(updatedGenre.url);
+    }
+  })
+];

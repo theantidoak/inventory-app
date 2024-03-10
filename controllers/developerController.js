@@ -66,17 +66,72 @@ exports.developer_create_post = [
 ];
 
 exports.developer_delete_get = asyncHandler(async (req, res, next) => {
+  const developer = await Developer.findOne({ slug: req.params.id }).exec();
 
+  if (developer === null) {
+    res.redirect('/developers');
+  }
+
+  res.render('developer/developer_delete', {
+    title: 'Delete Developer',
+    developer: developer
+  });
 });
 
 exports.developer_delete_post = asyncHandler(async (req, res, next) => {
-  
+  const [developer, applicationsByDeveloper] = await Promise.all([
+    Developer.find({ slug: req.params.id }),
+    Application.find({ 'developer.slug': req.params.id})
+  ])
+
+  if (applicationsByDeveloper.length > 0) {
+    res.render('developer/developer_delete', {
+      title: 'Delete Developer',
+      developer: developer,
+      applications: applicationsByDeveloper
+    });
+  } else {
+    await Developer.findOneAndDelete({ slug: req.params.id })
+    res.redirect('/developers')
+  }
 });
 
 exports.developer_update_get = asyncHandler(async (req, res, next) => {
+  const developer = await Developer.findOne({ slug: req.params.id }).exec();
 
+  if (developer === null) {
+    const err = new Error('Author not found');
+    err.status = 404;
+    return next(404);
+  }
+
+  res.render('developer/developer_form', {
+    title: 'Update Developer',
+    developer: developer
+  })
 });
 
-exports.developer_update_post = asyncHandler(async (req, res, next) => {
-  
-});
+exports.developer_update_post = [
+  body("name", "Developer name must not be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const name = req.body.name;
+    const slug = createSlug(name);
+    const developer = new Developer({ name: name, slug: slug });
+
+    if (!errors.isEmpty()) {
+      res.render("application_form", {
+        title: "Update Developer",
+        developer: developer,
+        errors: errors.array()
+      });
+      return;
+    } else {
+      const updatedDeveloper = await Developer.findOneAndUpdate({ slug: slug }, developer, {});
+      res.redirect(updatedDeveloper.url);
+    }
+  })
+];
