@@ -96,7 +96,7 @@ async function createApplications() {
       developers[0],
       "Over 40 different, evidence-based, techniques will help you get - and stay - smoke free. See and celebrate how long you’ve been quit, how your health is improving how much money you're saving, how many cigarettes you've not smoked, how much life you've regained, and more.",
       4.8,
-      "Free",
+      0,
       [genres[0]],
       ["Android", "iOS"]
     ),
@@ -105,7 +105,7 @@ async function createApplications() {
       developers[1],
       "Home Workout app is an expertly crafted fitness app that offers a variety of workouts and plans suitable for everyone, from fitness beginners to experts.",
       4.9,
-      "Free",
+      0,
       [genres[1]],
       ["Android", "iOS"]
     ),
@@ -114,7 +114,7 @@ async function createApplications() {
       developers[2],
       "Find football games near you and join them in a few seconds. Let's play soccer!",
       4.7,
-      "Free",
+      0,
       [genres[1]],
       ["Android", "iOS"]
     ),
@@ -123,7 +123,7 @@ async function createApplications() {
       developers[3],
       "An application dedicated to parents to control children's play time",
       4.5,
-      "Free",
+      0,
       [genres[3]],
       ["Android", "iOS"]
     ),
@@ -132,7 +132,7 @@ async function createApplications() {
       developers[4],
       "Control your Tapo smart devices from anywhere.",
       4.6,
-      "Free",
+      0,
       [genres[3]],
       ["Android", "iOS"]
     ),

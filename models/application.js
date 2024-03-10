@@ -7,7 +7,7 @@ const ApplicationSchema = new Schema({
   developer: { type: Schema.Types.ObjectId, ref: "Developer", required: true },
   description: { type: String, required: true },
   rating: { type: Number, required: true },
-  price: { type: String, required: true },
+  price: { type: Number, required: true },
   genre: [{
     _id: { type: Schema.Types.ObjectId, ref: "Genre", required: true },
     slug: { type: String, required: true },

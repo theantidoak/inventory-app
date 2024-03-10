@@ -36,7 +36,7 @@ exports.developer_create_get = (req, res, next) => {
 };
 
 exports.developer_create_post = [
-  body("name", "Developer name must contain at least 1 character")
+  body("name", "Developer name must not be empty")
     .trim()
     .isLength({ min: 1 })
     .escape(),
