@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1 Type: #{genre.name} 
+
+  div
+    h2 Applications:
+    if applications.length
+      dl
+        each application in applications 
+          dt
+            a(href=application.url) #{application.name}
+          dd #{application.description}
+    else
+      p There are no applications for this type.

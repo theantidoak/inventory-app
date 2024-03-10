@@ -10,6 +10,7 @@ const userArgs = process.argv.slice(2);
 const Application = require("../../models/application");
 const Developer = require("../../models/developer");
 const Genre = require("../../models/genre");
+const { createSlug } = require("../../src/shortcodes");
 
 const genres = [];
 const developers = [];
@@ -36,69 +37,14 @@ async function main() {
 // We pass the index to the ...Create functions so that, for example,
 // genre[0] will always be the Fantasy genre, regardless of the order
 // in which the elements of promise.all's argument complete.
-
 async function genreCreate(index, name, description) {
-  const genre = await Genre.findOneAndUpdate({ name: name }, { name: name, description: description }, { new: true, upsert: true });
-  genres[index] = genre;
-  console.log(`Added/Updated genre: ${name}`);
-}
-
-async function genreCreate(index, name, description) {
-  const genre = new Genre({ name: name, description: description });
-  await genre.save();
-  genres[index] = genre;
-  console.log(`Added genre: ${name}`);
-}
-
-async function developerCreate(index, name) {
-  const developer = new Developer({ name: name });
-  await developer.save();
-  developers[index] = developer;
-  console.log(`Added developer: ${name}`);
-}
-
-async function applicationCreate(index, name, developer, description, rating, price, genre, platforms) {
-  const applicationdetail = {
-    name: name,
-    developer: developer,
-    description: description,
-    rating: rating,
-    price: price,
-    platforms: platforms,
-  };
-  if (genre != false) applicationdetail.genre = genre;
-
-  const application = new Application(applicationdetail);
-  await application.save();
-  applications[index] = application;
-  console.log(`Added application: ${name}`);
-}
-
-async function applicationCreate(index, name, developer, description, rating, price, genre, platforms) {
-  const applicationdetail = {
-    name: name,
-    developer: developer,
-    description: description,
-    rating: rating,
-    price: price,
-    platforms: platforms,
-  };
-  if (genre != false) applicationdetail.genre = genre;
-
-  const developerId = await Developer.findOne({ name: developer });
-  const application = await Application.findOneAndUpdate({ name: name, developer: developerId._id }, applicationdetail, { new: true, upsert: true });
-  applications[index] = application;
-  console.log(`Added/Updated application: ${name}`);
-}
-
-async function genreCreate(index, name, description) {
-  const genre = await Genre.findOneAndUpdate({ name: name }, { name: name, description: description }, { new: true, upsert: true });
+  const genre = await Genre.findOneAndUpdate({ name: name }, { name: name, slug: createSlug(name), description: description }, { new: true, upsert: true });
   genres[index] = genre;
   console.log(`Added/Updated genre: ${name}`);
 }
 
 async function developerCreate(index, name) {
-  const developer = await Developer.findOneAndUpdate({ name: name }, { name: name }, { new: true, upsert: true });
+  const developer = await Developer.findOneAndUpdate({ name: name }, { name: name, slug: createSlug(name) }, { new: true, upsert: true });
   developers[index] = developer;
   console.log(`Added/Updated developer: ${name}`);
 }
@@ -106,6 +52,7 @@ async function developerCreate(index, name) {
 async function applicationCreate(index, name, developer, description, rating, price, genre, platforms) {
   const applicationdetail = {
     name: name,
+    slug: createSlug(name),
     developer: developer,
     description: description,
     rating: rating,
