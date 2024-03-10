@@ -2,6 +2,7 @@ const Developer = require('../models/developer');
 const Application = require('../models/application');
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require('express-validator');
+const { createSlug } = require('../src/shortcodes');
 
 exports.developer_list = asyncHandler(async (req, res, next) => {
   const allDevelopers = await Developer.find().sort({ "name": 1}).exec();
@@ -30,13 +31,39 @@ exports.developer_detail = asyncHandler(async (req, res, next) => {
 
 });
 
-exports.developer_create_get = asyncHandler(async (req, res, next) => {
+exports.developer_create_get = (req, res, next) => {
+  res.render("developer/developer_form", { title: "Add Developer" });
+};
 
-});
+exports.developer_create_post = [
+  body("name", "Developer name must contain at least 1 character")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+    const name = req.body.name;
+    const slug = createSlug(name);
+    const developer = new Developer({ name: name, slug: slug });
 
-exports.developer_create_post = asyncHandler(async (req, res, next) => {
-  
-});
+    if (!errors.isEmpty()) {
+      res.render("application_form", {
+        title: "Add Developer",
+        developer: developer,
+        errors: errors.array()
+      });
+      return;
+    } else {
+      const developerExists = await Developer.findOne({ name: req.body.name }).exec();
+      if (developerExists) {
+        res.redirect(developerExists.url);
+      } else {
+        await developer.save();
+        res.redirect(developer.url);
+      }
+    }
+  })
+];
 
 exports.developer_delete_get = asyncHandler(async (req, res, next) => {
 

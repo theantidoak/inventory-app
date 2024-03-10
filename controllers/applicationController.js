@@ -48,7 +48,16 @@ exports.application_detail = asyncHandler(async (req, res, next) => {
 });
 
 exports.application_create_get = asyncHandler(async (req, res, next) => {
+  const [allDevelopers, allGenres] = await Promise.all([
+    Developer.find().sort({ name: 1 }).exec(),
+    Genre.find().sort({ name: 1 })
+  ]);
 
+  res.render('application/application_form', {
+    title: 'Add Application',
+    developers: allDevelopers,
+    genres: allGenres
+  });
 });
 
 exports.application_create_post = asyncHandler(async (req, res, next) => {
