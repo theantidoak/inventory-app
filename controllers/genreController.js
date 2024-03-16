@@ -71,7 +71,7 @@ exports.genre_create_post = [
 exports.genre_delete_get = asyncHandler(async (req, res, next) => {
   const [genre, applicationsInGenre] = await Promise.all([
     Genre.findOne({ slug: req.params.slug }).exec(),
-    Application.find({ 'genre.slug': req.params.slug }, "name description").exec()
+    Application.find({ 'genre.slug': req.params.slug }, "name description slug").exec()
   ]);
 
   if (genre === null) {
@@ -88,7 +88,7 @@ exports.genre_delete_get = asyncHandler(async (req, res, next) => {
 exports.genre_delete_post = asyncHandler(async (req, res, next) => {
   const [genre, applicationsInGenre] = await Promise.all([
     Genre.findOne({ slug: req.body.genreslug }).exec(),
-    Application.find({ 'genre.slug': req.body.genreslug }, "name description").exec()
+    Application.find({ 'genre.slug': req.body.genreslug }, "name description slug").exec()
   ])
 
   if (applicationsInGenre.length > 0) {

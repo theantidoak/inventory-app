@@ -11,8 +11,8 @@ block content
   p #[strong Platforms: ]
     each platform, index in application.platforms
       span #{platform}
-    if index < application.platforms.length - 1
-      |,&nbsp;
+      if index < application.platforms.length - 1
+        |,&nbsp;
   p #[strong Genres: ]
     each genre, index in application.genre
       a(href=genre.url) #{genre.name}
