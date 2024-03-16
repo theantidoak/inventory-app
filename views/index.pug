@@ -6,4 +6,5 @@ block content
 
   ul
     each item in items
-      li # of #{item.name}: #{item.num}
+      li 
+        a(href=item.name.toLowerCase()) #{item.name}: #{item.num}
