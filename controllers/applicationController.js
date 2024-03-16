@@ -27,9 +27,9 @@ exports.index = asyncHandler(async (req, res, next) => {
 })
 
 exports.application_list = asyncHandler(async (req, res, next) => {
-  const allApplications = await Application.find({}, 'name slug developer').populate('developer').sort({ "name": 1}).exec();
-
-  res.render('application/application_list', { title: 'Applications', application_list: allApplications })
+  const allApplications = await Application.find({}, 'name slug developer').populate({path: 'developer._id', model: 'Developer'}).sort({ "name": 1}).exec();
+  const apps = allApplications ? allApplications.map((app) => Object.assign({}, app._doc, { developer: app._doc.developer._id, url: app.url } ) ) : [];
+  res.render('application/application_list', { title: 'Applications', application_list: apps })
 });
 
 exports.application_detail = asyncHandler(async (req, res, next) => {
@@ -40,10 +40,11 @@ exports.application_detail = asyncHandler(async (req, res, next) => {
     res.redirect('/applications');
   }
   
-  const app = { ...application._doc };
-  app.developer = application.developer._id;
-  app.genre = application.genre.map((genre) => genre._id);
-  app.url = application.url;
+  const app = Object.assign({}, application._doc, { 
+    developer: application._doc.developer._id, 
+    genre: application.genre.map((genre) => genre._id), 
+    url: application.url 
+  });
 
   res.render("application/application_detail", {
     title: app.name,
@@ -141,12 +142,13 @@ exports.application_create_post = [
     } else {
       const applications = await Application.find({ name: name }).exec();
       const applicationsExist = applications && applications.length > 0 ? true : false;
-      const sameApp = applicationsExist ? applications.find((application) => application.developer.name === req.body.developer) : null;
+      const developerName = req.body.developer ? req.body.developer.split("|")[1]  : '';
+      const sameApp = applicationsExist ? applications.find((application) => application.developer.slug === developerName) : null;
       if (sameApp) {
         res.redirect(sameApp.url);
       } else {
         const numApplications = applicationsExist ? '-' + (applications.length + 1) : '';
-        application.slug = createSlug(name + `${numApplications}`)
+        application.slug = createSlug(name + `${numApplications}`);
         await application.save();
         res.redirect(application.url);
       }
@@ -269,8 +271,15 @@ exports.application_update_post = [
       })
       return;
     } else {
+      const applications = await Application.find({ name: name }).exec();
+      const applicationsExist = applications && applications.length > 0 ? true : false;
+      const developerName = req.body.developer ? req.body.developer.split("|")[1]  : '';
+      const sameApp = applicationsExist ? applications.find((application) => application.developer.slug === developerName) : null;
       const { _id, ...modifiedApp } = application._doc;
-      const updatedApplication = await Application.findOneAndUpdate({ slug: req.params.slug }, modifiedApp, { new: true }).exec();
+      const numApplications = applicationsExist ? '-' + (applications.length + 1) : '';
+      modifiedApp.slug = sameApp ? modifiedApp.slug : createSlug(name + `${numApplications}`);
+      const searchSlug = sameApp ? modifiedApp.slug : req.params.slug;
+      const updatedApplication = await Application.findOneAndUpdate({ slug: searchSlug }, modifiedApp, { new: true }).exec();
       res.redirect(updatedApplication.url);
     }
   })
