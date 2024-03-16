@@ -11,10 +11,10 @@ exports.developer_list = asyncHandler(async (req, res, next) => {
 });
 
 exports.developer_detail = asyncHandler(async (req, res, next) => {
-  const slug = req.params.id;
+  const slug = req.params.slug;
   const [ developer, applications ] = await Promise.all([
     Developer.findOne({ slug: slug }),
-    Application.find({ 'developer.slug': slug })
+    Application.find({ 'developer.slug' : slug })
   ])
 
   if (developer === null) {
@@ -66,7 +66,10 @@ exports.developer_create_post = [
 ];
 
 exports.developer_delete_get = asyncHandler(async (req, res, next) => {
-  const developer = await Developer.findOne({ slug: req.params.id }).exec();
+  const [developer, applicationsByDeveloper] = await Promise.all([
+    Developer.find({ slug: req.params.slug }),
+    Application.find({ 'developer.slug': req.params.slug})
+  ])
 
   if (developer === null) {
     res.redirect('/developers');
@@ -74,30 +77,31 @@ exports.developer_delete_get = asyncHandler(async (req, res, next) => {
 
   res.render('developer/developer_delete', {
     title: 'Delete Developer',
-    developer: developer
+    developer: developer,
+    developer_applications: applicationsByDeveloper
   });
 });
 
 exports.developer_delete_post = asyncHandler(async (req, res, next) => {
   const [developer, applicationsByDeveloper] = await Promise.all([
-    Developer.find({ slug: req.params.id }),
-    Application.find({ 'developer.slug': req.params.id})
+    Developer.find({ slug: req.params.slug }),
+    Application.find({ 'developer.slug': req.params.slug})
   ])
 
   if (applicationsByDeveloper.length > 0) {
     res.render('developer/developer_delete', {
       title: 'Delete Developer',
       developer: developer,
-      applications: applicationsByDeveloper
+      developer_applications: applicationsByDeveloper
     });
   } else {
-    await Developer.findOneAndDelete({ slug: req.params.id })
+    await Developer.findOneAndDelete({ slug: req.params.slug })
     res.redirect('/developers')
   }
 });
 
 exports.developer_update_get = asyncHandler(async (req, res, next) => {
-  const developer = await Developer.findOne({ slug: req.params.id }).exec();
+  const developer = await Developer.findOne({ slug: req.params.slug }).exec();
 
   if (developer === null) {
     const err = new Error('Author not found');

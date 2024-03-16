@@ -1,4 +1,15 @@
 extends ../layout
 
 block content
-  h1 Developers
+  h1= title
+
+  if developer_list.length
+    ul
+      each developer in developer_list
+        li
+          a(href=developer.url) #{developer.name}
+
+  else
+    p There are no developers.
+
+  a(href="/developers/create") Add New Developer

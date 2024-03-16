@@ -1,4 +1,22 @@
 extends ../layout
 
-block content 
-  h1 #{developer.name}
+block content
+
+  h1 Developer: #{developer.name}
+
+  div
+
+    h4 Applications
+    if applications.length
+      dl
+        each application in applications
+          dt
+            a(href=application.url) #{application.name}
+          dd #{application.description}
+    else
+      p This developer has no applications.
+  hr
+  p
+    a(href=developer.url+'/delete') Delete developer
+  p
+    a(href=developer.url+'/update') Update developer
