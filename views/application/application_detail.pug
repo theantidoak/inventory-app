@@ -1,4 +1,26 @@
 extends ../layout
 
 block content 
-  h1= application.name
+  h1 #{title}: #{application.name}
+  
+  p #[strong Developer: ]
+    a(href=application.developer.url) #{application.developer.name}
+  p #[strong Description: ] #{application.description}
+  p #[strong Rating: ] #{application.rating}
+  p #[strong Price: ] #{application.price}
+  p #[strong Platforms: ]
+    each platform, index in application.platforms
+      span #{platform}
+    if index < application.platforms.length - 1
+      |,&nbsp;
+  p #[strong Genres: ]
+    each genre, index in application.genre
+      a(href=genre.url) #{genre.name}
+      if index < application.genre.length - 1
+       |,&nbsp;
+        
+  hr
+  p
+    a(href=application.url+'/delete') Delete Application
+  p
+    a(href=application.url+'/update') Update Application

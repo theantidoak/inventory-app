@@ -1,0 +1,31 @@
+extends ../layout
+
+block content
+
+  h1 #{title}: #{application.name}
+  
+  p #[strong Developer: ]
+    a(href=application.developer.url) #{application.developer.name}
+  p #[strong Description: ] #{application.description}
+  p #[strong Rating: ] #{application.rating}
+  p #[strong Price: ] #{application.price}
+  p #[strong Platforms: ]
+    each platform, index in application.platforms
+      span #{platform}
+    if index < application.platforms.length - 1
+      |,&nbsp;
+  p #[strong Genres: ]
+    each genre, index in application.genre
+      a(href=genre.url) #{genre.name}
+      if index < application.genre.length - 1
+       |,&nbsp;
+        
+  hr
+
+  p Do you really want to delete this Application?
+
+  form(method='POST')
+    div.form-group
+      input#applicationid.form-control(type='hidden', name='applicationslug', value=application.slug )
+
+    button.btn.btn-primary(type='submit') Delete

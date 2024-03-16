@@ -12,8 +12,8 @@ exports.index = asyncHandler(async (req, res, next) => {
     numGenres
   ] = await Promise.all([
     Application.countDocuments({}).exec(),
-    Developer.countDocuments({}),
-    Genre.countDocuments({})
+    Developer.countDocuments({}).exec(),
+    Genre.countDocuments({}).exec()
   ]);
 
   res.render('index', {
@@ -27,14 +27,19 @@ exports.index = asyncHandler(async (req, res, next) => {
 })
 
 exports.application_list = asyncHandler(async (req, res, next) => {
-  const allApplications = await Application.find().sort({ "name": 1}).exec();
+  const allApplications = await Application.find({}, 'name slug developer').populate('developer').sort({ "name": 1}).exec();
 
-  res.render('application/application_list', { title: 'Types of Applications', application_list: allApplications })
+  res.render('application/application_list', { title: 'Applications', application_list: allApplications })
 });
 
 exports.application_detail = asyncHandler(async (req, res, next) => {
-  const slug = req.params.id;
-  const application = await Application.findOne({ slug: slug });
+  const slug = req.params.slug;
+  const application = await Application.findOne({ slug: slug }).populate({path: 'developer._id', model: 'Developer'}).populate({path: 'genre._id', model: 'Genre'}).exec();
+  const app = { ...application._doc };
+  
+  app.developer = application.developer._id;
+  app.genre = application.genre.map((genre) => genre._id);
+  app.url = application.url;
 
   if (application === null) {
     const err = new Error("Application not found");
@@ -43,8 +48,8 @@ exports.application_detail = asyncHandler(async (req, res, next) => {
   }
 
   res.render("application/application_detail", {
-    title: application.name,
-    application: application
+    title: app.name,
+    application: app
   })
 });
 
@@ -88,34 +93,41 @@ exports.application_create_post = [
       return true;
     })
     .escape(),
-  body("genre.*").escape(),
+  body("genre")
+    .exists({ checkFalsy: true }).withMessage('Genre must not be empty')
+    .escape(),
   body("platforms")
     .exists({ checkFalsy: true }).withMessage('Platforms must not be empty')
-    .isArray({ min: 1 }).withMessage('At least one platform must be selected'),
+    .escape(),
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     const name = req.body.name;
     const slug = createSlug(req.body.name);
+    const developer = req.body.developer.split("|");
+    const genres = [].concat(req.body.genre).map(item => {
+      const genre = item.split("|");
+      return {_id: genre[0], slug: genre[1] }
+    });
 
     const application = new Application({
       name: name,
       slug: slug,
-      developer: req.body.developer,
+      developer: { _id: developer[0], slug: developer[1] },
       description: req.body.description,
       rating: req.body.rating == '' ? 0 : +req.body.rating,
       price: req.body.price == '' ? 0 : +req.body.price,
-      genre: req.body.genre,
-      platforms: req.body.platforms
+      genre: genres,
+      platforms: [].concat(req.body.platforms)
     });
 
     if (!errors.isEmpty()) {
       const [allDevelopers, allGenres] = await Promise.all([
         Developer.find().sort({ name: 1 }).exec(),
-        Genre.find().sort({ name: 1 })
+        Genre.find().sort({ name: 1 }).exec()
       ]);
 
       for (const genre of allGenres) {
-        if (application.genre.includes(genre._id)) {
+        if (application.genre.includes(genre.slug)) {
           genre.checked = true;
         }
       }
@@ -131,7 +143,7 @@ exports.application_create_post = [
     } else {
       const applications = await Application.find({ name: name }).exec();
       const applicationsExist = applications && applications.length > 0 ? true : false;
-      const sameApp = applicationsExist.find((application) => application.developer.name === req.body.developer);
+      const sameApp = applications.find((application) => application.developer.name === req.body.developer);
       if (sameApp) {
         res.redirect(sameApp.url);
       } else {
@@ -145,7 +157,13 @@ exports.application_create_post = [
 ];
 
 exports.application_delete_get = asyncHandler(async (req, res, next) => {
-  const application = await Application.findOne({ slug: req.params.id }).exec();
+  const slug = req.params.slug;
+  const application = await Application.findOne({ slug: slug }).populate({path: 'developer._id', model: 'Developer'}).populate({path: 'genre._id', model: 'Genre'}).exec();
+  const app = { ...application._doc };
+  
+  app.developer = application.developer._id;
+  app.genre = application.genre.map((genre) => genre._id);
+  app.url = application.url;
 
   if (application == null) {
     res.redirect('/applications');
@@ -153,18 +171,18 @@ exports.application_delete_get = asyncHandler(async (req, res, next) => {
 
   res.render('application/application_delete', {
     title: 'Delete Application',
-    application: application
+    application: app
   })  
 });
 
 exports.application_delete_post = asyncHandler(async (req, res, next) => {
-  await Application.findOneAndDelete({ slug: req.body.id });
+  await Application.findOneAndDelete({ slug: req.body.applicationslug }).exec();
   res.redirect('/applications');
 });
 
 exports.application_update_get = asyncHandler(async (req, res, next) => {
   const [application, allDevelopers, allGenres] = await Promise.all([
-    Application.findOne({ slug: req.params.id }),
+    Application.findOne({ slug: req.params.slug }).exec(),
     Developer.find().sort({ name: 1 }).exec(),
     Genre.find().sort({ name: 1 }).exec()
   ]);
@@ -228,11 +246,11 @@ exports.application_update_post = [
     if (!errors.isEmpty()) {
       const [allDevelopers, allGenres] = await Promise.all([
         Developer.find().sort({ name: 1 }).exec(),
-        Genre.find().sort({ name: 1 })
+        Genre.find().sort({ name: 1 }).exec()
       ]);
 
       for (const genre of allGenres) {
-        if (application.genre.includes(genre._id)) {
+        if (application.genre.includes(genre.slug)) {
           genre.checked = true;
         }
       }
@@ -252,7 +270,7 @@ exports.application_update_post = [
       if (sameApp) {
         res.redirect(sameApp.url);
       } else {
-        const updatedApplication = await Application.findOneAndUpdate({ slug: req.params.id }, application, {});
+        const updatedApplication = await Application.findOneAndUpdate({ slug: req.params.slug }, application, {}).exec();
         res.redirect(updatedApplication.url);
       }
     }

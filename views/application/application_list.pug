@@ -1,4 +1,13 @@
 extends ../layout
 
 block content
-  h1 Applications
+  h1= title
+
+  if application_list.length
+    ul
+      each application in application_list
+        li
+          a(href=application.url) #{application.name} | #{application.developer.name}
+
+  else
+    p There are no applications.
