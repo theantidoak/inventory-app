@@ -7,7 +7,7 @@ const { createSlug } = require('../src/shortcodes');
 exports.developer_list = asyncHandler(async (req, res, next) => {
   const allDevelopers = await Developer.find().sort({ "name": 1}).exec();
 
-  res.render('developer/developer_list', { title: 'Types of Applications', developer_list: allDevelopers })
+  res.render('developer/developer_list', { title: 'Developers', developer_list: allDevelopers })
 });
 
 exports.developer_detail = asyncHandler(async (req, res, next) => {
@@ -84,8 +84,8 @@ exports.developer_delete_get = asyncHandler(async (req, res, next) => {
 
 exports.developer_delete_post = asyncHandler(async (req, res, next) => {
   const [developer, applicationsByDeveloper] = await Promise.all([
-    Developer.find({ slug: req.params.slug }).exec(),
-    Application.find({ 'developer.slug': req.params.slug}).exec()
+    Developer.find({ slug: req.body.developerslug }).exec(),
+    Application.find({ 'developer.slug': req.body.developerslug }).exec()
   ])
 
   if (applicationsByDeveloper.length > 0) {
@@ -95,7 +95,7 @@ exports.developer_delete_post = asyncHandler(async (req, res, next) => {
       developer_applications: applicationsByDeveloper
     });
   } else {
-    await Developer.findOneAndDelete({ slug: req.params.slug }).exec()
+    await Developer.findOneAndDelete({ slug: req.body.developerslug }).exec()
     res.redirect('/developers')
   }
 });
@@ -135,7 +135,10 @@ exports.developer_update_post = [
       return;
     } else {
       const { _id, ...modifiedDev } = developer._doc;
-      const updatedDeveloper = await Developer.findOneAndUpdate({ slug: slug }, modifiedDev, {}).exec();
+      const [ updatedDeveloper, updatedApplications] = await Promise.all([
+        Developer.findOneAndUpdate({ slug: req.params.slug }, modifiedDev, { new: true }).exec(),
+        Application.updateMany({ 'developer.slug': req.params.slug }, { $set: { 'developer.slug': slug }}).exec()
+      ]);
       res.redirect(updatedDeveloper.url);
     }
   })

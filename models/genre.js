@@ -36,7 +36,7 @@ GenreSchema.pre('findOneAndUpdate', function(next) {
 });
 
 GenreSchema.virtual("url").get(function() {
-  return `genres/${this.slug}`;
+  return `/genres/${this.slug}`;
 });
 
 module.exports = mongoose.model("Genre", GenreSchema);

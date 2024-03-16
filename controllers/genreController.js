@@ -39,12 +39,16 @@ exports.genre_create_post = [
     .trim()
     .isLength({ min: 2 })
     .escape(),
+  body("description", "Description must not be empty")
+    .trim()
+    .isLength({ min: 1})
+    .escape(),
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     const name = req.body.name;
     const slug = createSlug(name);
-    const genre = new Genre({ name: name, slug: slug });
+    const genre = new Genre({ name: name, slug: slug, description: req.body.description });
     if (!errors.isEmpty()) {
       res.render("genre/genre_form", {
         title: "Add Genre",
@@ -65,7 +69,10 @@ exports.genre_create_post = [
 ];
 
 exports.genre_delete_get = asyncHandler(async (req, res, next) => {
-  const genre = await Genre.findOne({ slug: req.params.slug }).exec();
+  const [genre, applicationsInGenre] = await Promise.all([
+    Genre.findOne({ slug: req.params.slug }).exec(),
+    Application.find({ 'genre.slug': req.params.slug }, "name description").exec()
+  ]);
 
   if (genre === null) {
     res.redirect('/genres');
@@ -73,24 +80,25 @@ exports.genre_delete_get = asyncHandler(async (req, res, next) => {
 
   res.render('genre/genre_delete', {
     title: 'Delete Genre',
-    genre: genre
+    genre: genre,
+    genre_applications: applicationsInGenre
   })
 });
 
 exports.genre_delete_post = asyncHandler(async (req, res, next) => {
   const [genre, applicationsInGenre] = await Promise.all([
-    Genre.findOne({ slug: req.params.slug }).exec(),
-    Application.find({ 'genre.slug': req.params.slug }, "name description").exec()
+    Genre.findOne({ slug: req.body.genreslug }).exec(),
+    Application.find({ 'genre.slug': req.body.genreslug }, "name description").exec()
   ])
 
-  if (applicationsInGenre) {
+  if (applicationsInGenre.length > 0) {
     res.render('genre/genre_delete', {
       title: 'Delete Genre',
       genre: genre,
-      applications: applicationsInGenre
+      genre_applications: applicationsInGenre
     });
   } else {
-    await Genre.findOneAndDelete({ slug: req.params.slug }).exec();
+    await Genre.findOneAndDelete({ slug: req.body.genreslug }).exec();
     res.redirect('/genres');
   }
 });
@@ -115,12 +123,16 @@ exports.genre_update_post = [
     .trim()
     .isLength({ min: 2 })
     .escape(),
+  body("description", "Description must not be empty")
+    .trim()
+    .isLength({ min: 1})
+    .escape(),
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     const name = req.body.name;
     const slug = createSlug(name);
-    const genre = new Genre({ name: name, slug: slug });
+    const genre = new Genre({ name: name, slug: slug, description: req.body.description });
     if (!errors.isEmpty()) {
       res.render("genre/genre_form", {
         title: "Update Genre",
@@ -130,7 +142,10 @@ exports.genre_update_post = [
       return;
     } else {
       const { _id, ...modifiedGenre } = genre._doc;
-      const updatedGenre = await Genre.findOneAndUpdate({ slug: slug }, modifiedGenre, {}).exec()
+      const [ updatedGenre, updatedApplications] = await Promise.all([
+        Genre.findOneAndUpdate({ slug: req.params.slug }, modifiedGenre, { new: true }).exec(),
+        Application.updateMany({ 'genre.slug': req.params.slug }, { $set: { 'genre.$[].slug': slug } }).exec()
+      ]);
       res.redirect(updatedGenre.url);
     }
   })

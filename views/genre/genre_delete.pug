@@ -1,0 +1,29 @@
+extends ../layout
+
+block content
+
+  h1 #{title}: #{genre.name}
+  p #{genre.description}
+
+  hr
+
+  if genre_applications.length > 0
+
+    p #[strong Remove the genre from the following applications before attempting to delete this genre.]
+      div
+        h4 Applications
+        dl
+          each application in genre_applications
+            hr
+            dt
+              a(href=application.url) #{application.name}
+            dd #{application.description}
+
+  else
+    p Do you really want to delete this Genre?
+
+    form(method='POST')
+      div.form-group
+        input#genreslug.form-control(type='hidden', name='genreslug', value=genre.slug )
+
+      button.btn.btn-primary(type='submit') Delete
