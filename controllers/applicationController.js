@@ -35,17 +35,15 @@ exports.application_list = asyncHandler(async (req, res, next) => {
 exports.application_detail = asyncHandler(async (req, res, next) => {
   const slug = req.params.slug;
   const application = await Application.findOne({ slug: slug }).populate({path: 'developer._id', model: 'Developer'}).populate({path: 'genre._id', model: 'Genre'}).exec();
-  const app = { ...application._doc };
+
+  if (application == null) {
+    res.redirect('/applications');
+  }
   
+  const app = { ...application._doc };
   app.developer = application.developer._id;
   app.genre = application.genre.map((genre) => genre._id);
   app.url = application.url;
-
-  if (application === null) {
-    const err = new Error("Application not found");
-    err.status = 404;
-    return next(err);
-  }
 
   res.render("application/application_detail", {
     title: app.name,
@@ -143,7 +141,7 @@ exports.application_create_post = [
     } else {
       const applications = await Application.find({ name: name }).exec();
       const applicationsExist = applications && applications.length > 0 ? true : false;
-      const sameApp = applications.find((application) => application.developer.name === req.body.developer);
+      const sameApp = applicationsExist ? applications.find((application) => application.developer.name === req.body.developer) : null;
       if (sameApp) {
         res.redirect(sameApp.url);
       } else {
@@ -159,15 +157,15 @@ exports.application_create_post = [
 exports.application_delete_get = asyncHandler(async (req, res, next) => {
   const slug = req.params.slug;
   const application = await Application.findOne({ slug: slug }).populate({path: 'developer._id', model: 'Developer'}).populate({path: 'genre._id', model: 'Genre'}).exec();
-  const app = { ...application._doc };
   
-  app.developer = application.developer._id;
-  app.genre = application.genre.map((genre) => genre._id);
-  app.url = application.url;
-
   if (application == null) {
     res.redirect('/applications');
   }
+
+  const app = { ...application._doc };
+  app.developer = application.developer._id;
+  app.genre = application.genre.map((genre) => genre._id);
+  app.url = application.url;
 
   res.render('application/application_delete', {
     title: 'Delete Application',
@@ -222,25 +220,32 @@ exports.application_update_post = [
       return true;
     })
     .escape(),
-  body("genre.*").escape(),
+  body("genre")
+    .exists({ checkFalsy: true }).withMessage('Genre must not be empty')
+    .escape(),
   body("platforms")
     .exists({ checkFalsy: true }).withMessage('Platforms must not be empty')
-    .isArray({ min: 1 }).withMessage('At least one platform must be selected'),
+    .escape(),
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
     const name = req.body.name;
     const slug = createSlug(req.body.name);
+    const developer = req.body.developer.split("|");
+    const genres = [].concat(req.body.genre).map(item => {
+      const genre = item.split("|");
+      return {_id: genre[0], slug: genre[1] }
+    });
 
     const application = new Application({
       name: name,
       slug: slug,
-      developer: req.body.developer,
+      developer: { _id: developer[0], slug: developer[1] },
       description: req.body.description,
       rating: req.body.rating == '' ? 0 : +req.body.rating,
       price: req.body.price == '' ? 0 : +req.body.price,
-      genre: req.body.genre,
-      platforms: req.body.platforms
+      genre: genres,
+      platforms: [].concat(req.body.platforms)
     });
 
     if (!errors.isEmpty()) {
@@ -256,7 +261,7 @@ exports.application_update_post = [
       }
 
       res.render("application/application_form", {
-        title: "Add Application",
+        title: "Update Application",
         application: application,
         developers: allDevelopers,
         genres: allGenres,
@@ -264,15 +269,10 @@ exports.application_update_post = [
       })
       return;
     } else {
-      const applications = await Application.find({ name: name }).exec();
-      const applicationsExist = applications && applications.length > 0 ? true : false;
-      const sameApp = applicationsExist.find((application) => application.developer.name === req.body.developer);
-      if (sameApp) {
-        res.redirect(sameApp.url);
-      } else {
-        const updatedApplication = await Application.findOneAndUpdate({ slug: req.params.slug }, application, {}).exec();
-        res.redirect(updatedApplication.url);
-      }
+      const { _id, ...modifiedApp } = application._doc;
+      console.log(modifiedApp);
+      const updatedApplication = await Application.findOneAndUpdate({ slug: req.params.slug }, modifiedApp, {}).exec();
+      res.redirect(updatedApplication.url);
     }
   })
 ];

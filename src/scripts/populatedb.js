@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 console.log(
-  'This script populates some test applications, developers, and genres to your database. Specified database as argument - e.g.: node populatedb "mongodb+srv://cooluser:coolpassword@cluster0.lz91hw2.mongodb.net/inventory_app?retryWrites=true&w=majority"'
+  'This script populates some test applications, developers, and genres to your database. Specified database as argument - e.g.: node populatedb "mongodb+srv://user:password@cluster0.zp8czot.mongodb.net/inventory_app?retryWrites=true&w=majority"'
 );
 
 // Get arguments passed on command line
@@ -61,7 +61,7 @@ async function applicationCreate(index, name, developer, description, rating, pr
   };
   if (genre != false) applicationdetail.genre = genre;
 
-  const application = await Application.findOneAndUpdate({ name: name, developer: developer }, applicationdetail, { new: true, upsert: true });
+  const application = await Application.findOneAndUpdate({ name: name, 'developer.slug': developer.slug }, applicationdetail, { new: true, upsert: true });
   applications[index] = application;
   console.log(`Added/Updated application: ${name}`);
 }

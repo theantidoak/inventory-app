@@ -12,7 +12,7 @@ const app = express();
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 const mongoDB = `mongodb+srv://${process.env.DBUSER}:${process.env.DBPASSWORD}@cluster0.zp8czot.mongodb.net/inventory_app?retryWrites=true&w=majority`
-  || "mongodb+srv://your_user_name:your_password@cluster0.lz91hw2.mongodb.net/inventory_app?retryWrites=true&w=majority";
+  || "mongodb+srv://user:password@cluster0.zp8czot.mongodb.net/inventory_app?retryWrites=true&w=majority";
 
 main().catch((err) => console.log(err));
 async function main() {
