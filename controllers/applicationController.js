@@ -270,7 +270,6 @@ exports.application_update_post = [
       return;
     } else {
       const { _id, ...modifiedApp } = application._doc;
-      console.log(modifiedApp);
       const updatedApplication = await Application.findOneAndUpdate({ slug: req.params.slug }, modifiedApp, {}).exec();
       res.redirect(updatedApplication.url);
     }

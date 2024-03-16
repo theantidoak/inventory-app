@@ -1,15 +1,22 @@
 extends ../layout
 
 block content
-  h1 Type: #{genre.name} 
 
-  div
-    h2 Applications:
-    if applications.length
+  h1 Genre: #{genre.name}
+
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Applications
+    if genre_applications.length
       dl
-        each application in applications 
+        each application in genre_applications
           dt
             a(href=application.url) #{application.name}
           dd #{application.description}
     else
-      p There are no applications for this type.
+      p This genre has no applications.
+
+  p
+    a(href=genre.url+'/delete') Delete Genre
+  p
+    a(href=genre.url+'/update') Update Genre

@@ -29,6 +29,23 @@ ApplicationSchema.pre('save', function(next) {
   next();
 });
 
+ApplicationSchema.pre('findOneAndUpdate', function(next) {
+  const update = this.getUpdate();
+  const fieldsToSanitize = ['name', 'slug', 'description'];
+
+  fieldsToSanitize.forEach((field) => {
+    update[field] = he.decode(update[field]);
+  });
+
+  if (update.$set) {
+    fieldsToSanitize.forEach((field) => {
+      update.$set[field] = he.decode(update.$set[field]);
+    });
+  }
+
+  next();
+});
+
 ApplicationSchema.virtual("url").get(function () {
   return `/applications/${this.slug}`;
 });

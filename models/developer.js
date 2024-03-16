@@ -17,6 +17,23 @@ DeveloperSchema.pre('save', function(next) {
   next();
 });
 
+DeveloperSchema.pre('findOneAndUpdate', function(next) {
+  const update = this.getUpdate();
+  const fieldsToSanitize = ['name', 'slug'];
+
+  fieldsToSanitize.forEach((field) => {
+    update[field] = he.decode(update[field]);
+  });
+
+  if (update.$set) {
+    fieldsToSanitize.forEach((field) => {
+      update.$set[field] = he.decode(update.$set[field]);
+    });
+  }
+
+  next();
+});
+
 DeveloperSchema.virtual("url").get(function() {
   return `/developers/${this.slug}`;
 })

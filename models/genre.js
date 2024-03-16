@@ -18,6 +18,23 @@ GenreSchema.pre('save', function(next) {
   next();
 });
 
+GenreSchema.pre('findOneAndUpdate', function(next) {
+  const update = this.getUpdate();
+  const fieldsToSanitize = ['name', 'slug', 'description'];
+
+  fieldsToSanitize.forEach((field) => {
+    update[field] = he.decode(update[field]);
+  });
+
+  if (update.$set) {
+    fieldsToSanitize.forEach((field) => {
+      update.$set[field] = he.decode(update.$set[field]);
+    });
+  }
+
+  next();
+});
+
 GenreSchema.virtual("url").get(function() {
   return `genres/${this.slug}`;
 });

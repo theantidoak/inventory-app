@@ -11,10 +11,10 @@ exports.genre_list = asyncHandler(async (req, res, next) => {
 });
 
 exports.genre_detail = asyncHandler(async (req, res, next) => {
-  const slug = req.params.id;
+  const slug = req.params.slug;
   const [genre, applicationsInGenre] = await Promise.all([
     Genre.findOne({ slug: slug }).exec(),
-    Application.find({ "genre.slug": slug })
+    Application.find({ "genre.slug": slug }).exec()
   ]);
 
   if (genre === null) {
@@ -26,7 +26,7 @@ exports.genre_detail = asyncHandler(async (req, res, next) => {
   res.render('genre/genre_detail', { 
     title: 'Types of Applications',
     genre: genre,
-    applications: applicationsInGenre
+    genre_applications: applicationsInGenre
   })
 });
 
@@ -65,7 +65,7 @@ exports.genre_create_post = [
 ];
 
 exports.genre_delete_get = asyncHandler(async (req, res, next) => {
-  const genre = await Genre.findOne({ slug: req.params.id }).exec();
+  const genre = await Genre.findOne({ slug: req.params.slug }).exec();
 
   if (genre === null) {
     res.redirect('/genres');
@@ -79,8 +79,8 @@ exports.genre_delete_get = asyncHandler(async (req, res, next) => {
 
 exports.genre_delete_post = asyncHandler(async (req, res, next) => {
   const [genre, applicationsInGenre] = await Promise.all([
-    Genre.findOne({ slug: req.params.id }).exec(),
-    Application.find({ 'genre.slug': req.params.id }, "name description").exec()
+    Genre.findOne({ slug: req.params.slug }).exec(),
+    Application.find({ 'genre.slug': req.params.slug }, "name description").exec()
   ])
 
   if (applicationsInGenre) {
@@ -90,13 +90,13 @@ exports.genre_delete_post = asyncHandler(async (req, res, next) => {
       applications: applicationsInGenre
     });
   } else {
-    await Genre.findOneAndDelete({ slug: req.params.id });
+    await Genre.findOneAndDelete({ slug: req.params.slug }).exec();
     res.redirect('/genres');
   }
 });
 
 exports.genre_update_get = asyncHandler(async (req, res, next) => {
-  const genre = await Genre.findOne({ slug: req.params.id });
+  const genre = await Genre.findOne({ slug: req.params.slug }).exec();
 
   if (genre === null) {
     const err = new Error('Genre not found');
@@ -129,7 +129,8 @@ exports.genre_update_post = [
       })
       return;
     } else {
-      const updatedGenre = await Genre.findOneAndUpdate({ slug: slug }, genre, {})
+      const { _id, ...modifiedGenre } = genre._doc;
+      const updatedGenre = await Genre.findOneAndUpdate({ slug: slug }, modifiedGenre, {}).exec()
       res.redirect(updatedGenre.url);
     }
   })
