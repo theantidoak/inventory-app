@@ -141,10 +141,13 @@ exports.genre_update_post = [
       })
       return;
     } else {
+      const genreExists = await Genre.findOne({ name: name }).exec();
       const { _id, ...modifiedGenre } = genre._doc;
+      const searchSlug = genreExists ? slug : req.params.slug;
+      const genreField = genreExists ? { 'genre.$[]._id': genreExists._id, 'genre.$[].slug': genreExists.slug } : { 'genre.$[].slug': slug };
       const [ updatedGenre, updatedApplications] = await Promise.all([
-        Genre.findOneAndUpdate({ slug: req.params.slug }, modifiedGenre, { new: true }).exec(),
-        Application.updateMany({ 'genre.slug': req.params.slug }, { $set: { 'genre.$[].slug': slug } }).exec()
+        Genre.findOneAndUpdate({ slug: searchSlug }, modifiedGenre, { new: true }).exec(),
+        Application.updateMany({ 'genre.slug': req.params.slug }, { $set: genreField }).exec()
       ]);
       res.redirect(updatedGenre.url);
     }

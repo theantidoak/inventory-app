@@ -134,10 +134,13 @@ exports.developer_update_post = [
       });
       return;
     } else {
+      const developerExists = await Developer.findOne({ slug: slug }).exec();
       const { _id, ...modifiedDev } = developer._doc;
+      const searchSlug = developerExists ? slug : req.params.slug;
+      const developerField = developerExists ? { 'developer._id': developerExists._id, 'developer.slug': developerExists.slug } : { 'developer.slug': slug };
       const [ updatedDeveloper, updatedApplications] = await Promise.all([
-        Developer.findOneAndUpdate({ slug: req.params.slug }, modifiedDev, { new: true }).exec(),
-        Application.updateMany({ 'developer.slug': req.params.slug }, { $set: { 'developer.slug': slug }}).exec()
+        Developer.findOneAndUpdate({ slug: searchSlug }, modifiedDev, { new: true }).exec(),
+        Application.updateMany({ 'developer.slug': req.params.slug }, { $set: developerField }).exec()
       ]);
       res.redirect(updatedDeveloper.url);
     }
