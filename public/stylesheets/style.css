@@ -162,6 +162,18 @@ main {
 .page__item-link.detail {
   justify-content: flex-start;
 }
+.page__uploaded-img-container {
+  display: none;
+  margin: 0 auto;
+  width: fit-content;
+}
+.page__uploaded-img-container.shown {
+  display: block;
+}
+.page__uploaded-img-container img {
+  width: 4rem;
+  height: auto;
+}
 .page__action-link-container {
   margin: 1rem auto;
   display: flex;

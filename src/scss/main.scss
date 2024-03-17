@@ -176,6 +176,21 @@ main {
     }
   }
 
+  &__uploaded-img-container {
+    display: none;
+    margin: 0 auto;
+    width: fit-content;
+
+    &.shown {
+      display: block;
+    }
+
+    img {
+      width: 4rem;
+      height: auto;
+    }
+  }
+
   &__action-link-container {
     margin: 1rem auto;
     display: flex;

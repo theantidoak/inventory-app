@@ -4,10 +4,15 @@ block content
 
   div.page
     h1.page__title Genre: #{genre.name}
+    if genre && genre.img
+      div.page__uploaded-img-container.shown
+        img#genre-image-id(src=`data:image/svg+xml;base64,${genre.img}` alt="Your uploaded image")
+    else
+      div.page__uploaded-img-container
+        img#genre-image-id(src="#" alt="Placeholder image")
     p.page__detail Description: #{genre.description}
 
     div(style='margin-left:20px;margin-top:20px')
-
       h2 Applications
       if genre_applications.length
         ul.page__items

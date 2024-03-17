@@ -44,7 +44,8 @@ exports.application_detail = asyncHandler(async (req, res, next) => {
   
   const app = Object.assign({}, application._doc, { 
     developer: application._doc.developer._id, 
-    genre: application.genre.map((genre) => genre._id), 
+    genre: application.genre.map((genre) => genre._id),
+    img: application.img,
     url: application.url 
   });
 

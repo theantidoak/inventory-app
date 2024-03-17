@@ -6,6 +6,12 @@ block content
     h1.page__title #{application.name}
     
     div.page__detail
+      if application && application.img
+        div.page__uploaded-img-container.shown
+          img#application-image-id(src=`data:image/svg+xml;base64,${application.img}` alt="Your uploaded image")
+      else
+        div.page__uploaded-img-container
+          img#application-image-id(src="#" alt="Placeholder image")
       p #[strong Developer: ]
         a(href=application.developer.url) #{application.developer.name}
       p #[strong Description: ] #{application.description}
