@@ -6,7 +6,7 @@ block content
   form.form(method='POST' enctype="multipart/form-data")
     div.form__group
       label(for='first_name') Name:
-      input#first_name.form-control(type='text', placeholder='Name' name='name' required value=(developer===undefined ? '' : developer.name) )
+      input#first_name(type='text', placeholder='Name' name='name' required value=(developer===undefined ? '' : developer.name) )
     div.form__group
       label Image:
       input(type="file" name="uploaded_file" id="upload-developer-file")
@@ -18,7 +18,11 @@ block content
           img#developer-image-id(src="#" alt="Placeholder image")
       label Delete Image
       input(type="checkbox" name="remove_image")
-    button.btn.btn-primary(type='submit') Submit
+    if developer
+      div.form__group
+        label Admin Password:
+        input#admin-password(type="password" name="admin_password", required, placeholder="Enter Admin Password")
+    button(type='submit') Submit
 
   if errors
     ul

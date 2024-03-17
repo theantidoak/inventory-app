@@ -6,10 +6,10 @@ block content
   form.form(method='POST' enctype="multipart/form-data")
     div.form__group
       label(for='name') Name:
-      input#name.form-control(type='text', placeholder='Name of application' name='name' required value=(application===undefined ? '' : application.name) )
+      input#name(type='text', placeholder='Name of application' name='name' required value=(application===undefined ? '' : application.name) )
     div.form__group
       label(for='developer') Developer:
-      select#developer.form-control(name='developer' required)
+      select#developer(name='developer' required)
         option(value='') --Please select a developer--
         for developer in developers
           if application
@@ -21,13 +21,13 @@ block content
             option(value=developer._id + '|' + developer.slug) #{developer.name}
     div.form__group
       label(for='description') Description:
-      textarea#description.form-control(placeholder='Description' name='description' required)= application===undefined ? '' : application.description
+      textarea#description(placeholder='Description' name='description' required)= application===undefined ? '' : application.description
     div.form__group
       label(for='rating') Rating:
-      input#rating.form-control(type='number', placeholder='4.5' name='rating' value=(application===undefined ? '' : application.rating) required)
+      input#rating(type='number', placeholder='4.5' name='rating' value=(application===undefined ? '' : application.rating) required)
     div.form__group
       label(for='price') Price (usd):
-      input#price.form-control(type='number', placeholder='2.99' name='price' value=(application===undefined ? '' : application.price) required)
+      input#price(type='number', placeholder='2.99' name='price' value=(application===undefined ? '' : application.price) required)
     div.form__group
       label Platform:
       div
@@ -59,7 +59,11 @@ block content
           img#application-image-id(src="#" alt="Placeholder image")
       label Delete Image
       input(type="checkbox" name="remove_image")
-    button.btn.btn-primary(type='submit') Submit
+    if application
+      div.form__group
+        label Admin Password:
+        input#admin-password(type="password" name="admin_password", required, placeholder="Enter Admin Password")
+    button(type='submit') Submit
 
   if errors
     ul

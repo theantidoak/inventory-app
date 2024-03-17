@@ -4,8 +4,9 @@ const Genre = require('../models/genre');
 const { body, validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler');
 const { createSlug } = require('../src/shortcodes');
-const multer  = require('multer')
+const multer  = require('multer');
 const upload = multer();
+require('dotenv').config();
 
 exports.index = asyncHandler(async (req, res, next) => {
   const [
@@ -181,6 +182,7 @@ exports.application_delete_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.application_delete_post = asyncHandler(async (req, res, next) => {
+  if (!req.body.admin_password || req.body.admin_password !== process.env.ADMIN) return res.status(401).send("Unauthorized: Incorrect admin password");
   await Application.findOneAndDelete({ slug: req.body.applicationslug }).exec();
   res.redirect('/applications');
 });
@@ -289,6 +291,7 @@ exports.application_update_post = [
       if (req.body.remove_image === "on") {
         modifiedApp.image = ''
       }
+      if (!req.body.admin_password || req.body.admin_password !== process.env.ADMIN) return res.status(401).send("Unauthorized: Incorrect admin password");
       const updatedApplication = await Application.findOneAndUpdate({ slug: searchSlug }, modifiedApp, { new: true }).exec();
       res.redirect(updatedApplication.url);
     }

@@ -5,6 +5,7 @@ const { body, validationResult } = require('express-validator');
 const { createSlug } = require('../src/shortcodes');
 const multer  = require('multer')
 const upload = multer();
+require('dotenv').config();
 
 exports.genre_list = asyncHandler(async (req, res, next) => {
   const allGenres = await Genre.find().sort({ "name": 1}).exec();
@@ -107,6 +108,7 @@ exports.genre_delete_post = asyncHandler(async (req, res, next) => {
       genre_applications: applicationsInGenre
     });
   } else {
+    if (!req.body.admin_password || req.body.admin_password !== process.env.ADMIN) return res.status(401).send("Unauthorized: Incorrect admin password");
     await Genre.findOneAndDelete({ slug: req.body.genreslug }).exec();
     res.redirect('/genres');
   }
@@ -163,6 +165,7 @@ exports.genre_update_post = [
       if (req.body.remove_image === "on") {
         modifiedGenre.image = ''
       }
+      if (!req.body.admin_password || req.body.admin_password !== process.env.ADMIN) return res.status(401).send("Unauthorized: Incorrect admin password");
       const [ updatedGenre, updatedApplications] = await Promise.all([
         Genre.findOneAndUpdate({ slug: searchSlug }, modifiedGenre, { new: true }).exec(),
         Application.updateMany({ 'genre.slug': req.params.slug }, { $set: genreField }).exec()

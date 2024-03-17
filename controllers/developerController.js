@@ -5,6 +5,7 @@ const { body, validationResult } = require('express-validator');
 const { createSlug } = require('../src/shortcodes');
 const multer  = require('multer')
 const upload = multer();
+require('dotenv').config();
 
 exports.developer_list = asyncHandler(async (req, res, next) => {
   const allDevelopers = await Developer.find().sort({ "name": 1}).exec();
@@ -102,6 +103,7 @@ exports.developer_delete_post = asyncHandler(async (req, res, next) => {
       developer_applications: applicationsByDeveloper
     });
   } else {
+    if (!req.body.admin_password || req.body.admin_password !== process.env.ADMIN) return res.status(401).send("Unauthorized: Incorrect admin password");
     await Developer.findOneAndDelete({ slug: req.body.developerslug }).exec()
     res.redirect('/developers')
   }
@@ -153,6 +155,7 @@ exports.developer_update_post = [
       if (req.body.remove_image === "on") {
         modifiedDev.image = ''
       }
+      if (!req.body.admin_password || req.body.admin_password !== process.env.ADMIN) return res.status(401).send("Unauthorized: Incorrect admin password");
       const [ updatedDeveloper, updatedApplications] = await Promise.all([
         Developer.findOneAndUpdate({ slug: searchSlug }, modifiedDev, { new: true }).exec(),
         Application.updateMany({ 'developer.slug': req.params.slug }, { $set: developerField }).exec()

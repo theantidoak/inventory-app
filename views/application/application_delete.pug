@@ -26,8 +26,11 @@ block content
 
     p Do you really want to delete this Application?
 
-    form(method='POST')
+    form.form(method='POST')
       div
         input#applicationslug(type='hidden', name='applicationslug', value=application.slug )
+      div.form__group
+        label Admin Password:
+        input#admin-password(type="password" name="admin_password", required, placeholder="Enter Admin Password")
 
-      button.page__action-btn(type='submit') Delete
+      button(type='submit') Delete
