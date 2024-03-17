@@ -4,11 +4,11 @@ block content
 
   h1 #{title}
 
-  form(method='POST')
-    div.form-group
+  form.form(method='POST')
+    div.form__group
       label(for='name') Genre:
       input#name.form-control(type='text', placeholder='Technology, Games, etc.' name='name' value=(genre===undefined ? '' : genre.name) required)
-    div.form-group
+    div.form__group
       label(for='description') Description:
       textarea#description.form-control(placeholder='Description' name='description' required)= genre === undefined ? '' : genre.description
     button.btn.btn-primary(type='submit') Submit

@@ -3,8 +3,8 @@ extends ../layout
 block content
   h1=title
 
-  form(method='POST')
-    div.form-group
+  form.form(method='POST')
+    div.form__group
       label(for='first_name') Name:
       input#first_name.form-control(type='text', placeholder='Name' name='name' required value=(developer===undefined ? '' : developer.name) )
     button.btn.btn-primary(type='submit') Submit

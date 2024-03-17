@@ -3,11 +3,11 @@ extends ../layout
 block content
   h1= title
 
-  form(method='POST')
-    div.form-group
+  form.form(method='POST')
+    div.form__group
       label(for='name') Name:
       input#name.form-control(type='text', placeholder='Name of application' name='name' required value=(application===undefined ? '' : application.name) )
-    div.form-group
+    div.form__group
       label(for='developer') Developer:
       select#developer.form-control(name='developer' required)
         option(value='') --Please select a developer--
@@ -19,30 +19,30 @@ block content
               option(value=developer._id + '|' + developer.slug) #{developer.name}
           else
             option(value=developer._id + '|' + developer.slug) #{developer.name}
-    div.form-group
+    div.form__group
       label(for='description') Description:
       textarea#description.form-control(placeholder='Description' name='description' required)= application===undefined ? '' : application.description
-    div.form-group
+    div.form__group
       label(for='rating') Rating:
       input#rating.form-control(type='number', placeholder='4.5' name='rating' value=(application===undefined ? '' : application.rating) required)
-    div.form-group
+    div.form__group
       label(for='price') Price (usd):
       input#price.form-control(type='number', placeholder='2.99' name='price' value=(application===undefined ? '' : application.price) required)
-    div.form-group
+    div.form__group
       label Platform:
       div
         for platform in ["iOS", "Android"]
-          div
+          div.form__group
             if application && application.platforms.find((item) => item == platform)
               input.checkbox-input(type='checkbox', name='platforms', id=platform, value=platform checked)
             else
               input.checkbox-input(type='checkbox', name='platforms', id=platform, value=platform)
             label(for=platform) #{platform}
-    div.form-group
+    div.form__group
       label Genre:
       div
         for genre in genres
-          div
+          div.form__group
             if application && application.genre.find((item) => item.slug == genre.slug)
               input.checkbox-input(type='checkbox', name='genre', id=genre.slug, value=genre._id + '|' + genre.slug, checked)
             else

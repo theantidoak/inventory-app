@@ -20,6 +20,10 @@ body {
   height: 100%;
   width: 100%;
   background-color: var(--background-white);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: space-between;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -29,6 +33,11 @@ h1, h2, h3, h4, h5, h6 {
 
 hr {
   margin: 1rem 0;
+}
+
+heading {
+  position: absolute;
+  width: 100%;
 }
 
 .navigation {
@@ -79,11 +88,11 @@ hr {
 
 main {
   width: 100%;
-  padding: 0 5vw;
+  padding: 64px 5vw 0;
 }
 @media (min-width: 1024px) {
   main {
-    padding: 0 4rem;
+    padding: 64px 4rem;
   }
 }
 
@@ -91,11 +100,7 @@ main {
   background-color: var(--background-white);
   padding: 0.5rem 0;
   width: 100%;
-  margin: 0 auto;
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  margin: 2rem auto 0;
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1490196078);
 }
 .footer__copyright {
@@ -135,6 +140,10 @@ main {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   transition: all 0.15s linear;
   max-width: 25rem;
+  display: flex;
+  justify-content: center;
+  width: -webkit-fill-available;
+  margin: 0 auto;
 }
 .page__item:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -207,6 +216,44 @@ main {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.form {
+  padding: 1.5rem 1rem;
+  display: flex;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  transition: all 0.15s linear;
+  gap: 0.75rem 1rem;
+  margin: 1rem auto;
+  color: #ffffff;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+  border: none;
+  flex-direction: column;
+  width: clamp(18rem, 100%, 28rem);
+}
+.form__group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.form__group label {
+  width: 5.5rem;
+}
+.form__group input:not(input[type=checkbox]), .form__group select, .form__group textarea {
+  padding: 0.25rem 0.5rem;
+  background-color: var(--background-white);
+  border: none;
+  width: clamp(8rem, 100% - 5.5rem, 16rem);
+}
+.form button {
+  padding: 0.5rem 0.75rem;
+  border-radius: 5px;
+  border: none;
+  width: fit-content;
+  margin: 0 auto;
+  cursor: pointer;
+  background-color: var(--background-white);
 }
 
 /*# sourceMappingURL=style.css.map */
