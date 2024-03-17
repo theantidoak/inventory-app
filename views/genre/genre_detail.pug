@@ -2,22 +2,22 @@ extends ../layout
 
 block content
 
-  h1 Genre: #{genre.name}
-  p Description: #{genre.description}
+  div.page
+    h1.page__title Genre: #{genre.name}
+    p.page__Detail Description: #{genre.description}
 
-  div(style='margin-left:20px;margin-top:20px')
+    div(style='margin-left:20px;margin-top:20px')
 
-    h4 Applications
-    if genre_applications.length
-      dl
-        each application in genre_applications
-          dt
-            a(href=application.url) #{application.name}
-          dd #{application.description}
-    else
-      p This genre has no applications.
+      h4 Applications
+      if genre_applications.length
+        dl.page__items
+          each application in genre_applications
+            dt.page__item
+              a(href=application.url) #{application.name}
+            dd #{application.description}
+      else
+        p This genre has no applications.
 
-  p
-    a(href=genre.url+'/delete') Delete Genre
-  p
-    a(href=genre.url+'/update') Update Genre
+    div.page__action-link-container
+      a.page__action-link(href=genre.url+'/delete') Delete Genre
+      a.page__action-link(href=genre.url+'/update') Update Genre

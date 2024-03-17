@@ -1,10 +1,10 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  div.container.page
+    h1.page__title= title
 
-  ul
-    each item in items
-      li 
-        a(href=item.name.toLowerCase()) #{item.name}: #{item.num}
+    ul.page__items
+      each item in items
+        li.page__item
+          a.page__item-link(href=item.name.toLowerCase()) #{item.name}: #{item.num}

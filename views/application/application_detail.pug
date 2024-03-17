@@ -1,26 +1,28 @@
 extends ../layout
 
 block content 
-  h1 #{application.name}
-  
-  p #[strong Developer: ]
-    a(href=application.developer.url) #{application.developer.name}
-  p #[strong Description: ] #{application.description}
-  p #[strong Rating: ] #{application.rating}
-  p #[strong Price: ] #{application.price}
-  p #[strong Platforms: ]
-    each platform, index in application.platforms
-      span #{platform}
-      if index < application.platforms.length - 1
-        |,&nbsp;
-  p #[strong Genres: ]
-    each genre, index in application.genre
-      a(href=genre.url) #{genre.name}
-      if index < application.genre.length - 1
-       |,&nbsp;
-        
-  hr
-  p
-    a(href=application.url+'/delete') Delete Application
-  p
-    a(href=application.url+'/update') Update Application
+
+  div.page
+    h1.page__title #{application.name}
+    
+    div.page__detail
+      p #[strong Developer: ]
+        a(href=application.developer.url) #{application.developer.name}
+      p #[strong Description: ] #{application.description}
+      p #[strong Rating: ] #{application.rating}
+      p #[strong Price: ] #{application.price}
+      p #[strong Platforms: ]
+        each platform, index in application.platforms
+          span #{platform}
+          if index < application.platforms.length - 1
+            |,&nbsp;
+      p #[strong Genres: ]
+        each genre, index in application.genre
+          a(href=genre.url) #{genre.name}
+          if index < application.genre.length - 1
+          |,&nbsp;
+          
+    hr
+    div.page__action-link-container
+      a.page__action-link(href=application.url+'/delete') Delete Application
+      a.page__action-link(href=application.url+'/update') Update Application

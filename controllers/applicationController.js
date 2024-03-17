@@ -17,7 +17,7 @@ exports.index = asyncHandler(async (req, res, next) => {
   ]);
 
   res.render('index', {
-    title: 'Application Station',
+    title: 'Organize Your Apps',
     items: [ 
       { name: 'Applications', num: numApplications}, 
       { name: 'Developers', num: numDevelopers }, 

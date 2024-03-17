@@ -7,7 +7,7 @@ const { createSlug } = require('../src/shortcodes');
 exports.genre_list = asyncHandler(async (req, res, next) => {
   const allGenres = await Genre.find().sort({ "name": 1}).exec();
 
-  res.render('genre/genre_list', { title: 'Types of Applications', genre_list: allGenres })
+  res.render('genre/genre_list', { title: 'Genres', genre_list: allGenres })
 });
 
 exports.genre_detail = asyncHandler(async (req, res, next) => {
@@ -24,7 +24,7 @@ exports.genre_detail = asyncHandler(async (req, res, next) => {
   }
 
   res.render('genre/genre_detail', { 
-    title: 'Types of Applications',
+    title: 'Genres',
     genre: genre,
     genre_applications: applicationsInGenre
   })

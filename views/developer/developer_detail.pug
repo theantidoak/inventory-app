@@ -2,21 +2,20 @@ extends ../layout
 
 block content
 
-  h1 Developer: #{developer.name}
+  div.page
+    h1.page__title Developer: #{developer.name}
 
-  div
-
-    h4 Applications
-    if applications.length
-      dl
-        each application in applications
-          dt
-            a(href=application.url) #{application.name}
-          dd #{application.description}
-    else
-      p This developer has no applications.
-  hr
-  p
-    a(href=developer.url+'/delete') Delete developer
-  p
-    a(href=developer.url+'/update') Update developer
+    div
+      h4 Applications
+      if applications.length
+        ul.page__items
+          each application in applications
+            li.page__item
+              a.page__item-link(href=application.url) #{application.name}
+                span #{application.description}
+      else
+        p This developer has no applications.
+    hr
+    div.page__action-link-container
+      a.page__action-link(href=developer.url+'/delete') Delete developer
+      a.page__action-link(href=developer.url+'/update') Update developer
