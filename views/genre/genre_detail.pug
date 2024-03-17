@@ -8,13 +8,13 @@ block content
 
     div(style='margin-left:20px;margin-top:20px')
 
-      h4 Applications
+      h2 Applications
       if genre_applications.length
-        dl.page__items
+        ul.page__items
           each application in genre_applications
-            dt.page__item
-              a(href=application.url) #{application.name}
-            dd #{application.description}
+            li.page__item
+              a.page__item-link.detail(href=application.url) #{application.name}
+                span #{application.description}
       else
         p This genre has no applications.
 

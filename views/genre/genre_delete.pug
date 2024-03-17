@@ -2,28 +2,28 @@ extends ../layout
 
 block content
 
-  h1 #{title}: #{genre.name}
-  p #{genre.description}
+  div.page
+    h1.page__title #{title}: #{genre.name}
+    p #{genre.description}
 
-  hr
+    hr
 
-  if genre_applications.length > 0
+    if genre_applications.length > 0
 
-    p #[strong Remove the genre from the following applications before attempting to delete this genre.]
-      div
-        h4 Applications
-        dl
-          each application in genre_applications
-            hr
-            dt
-              a(href=application.url) #{application.name}
-            dd #{application.description}
+      p #[strong Remove the genre from the following applications before attempting to delete this genre.]
+        div
+          h2 Applications
+          ul.page__items
+            each application in genre_applications
+              li.page__item
+                a.page__item-link(href=application.url) #{application.name}
+                  span #{application.description}
 
-  else
-    p Do you really want to delete this Genre?
+    else
+      p Do you really want to delete this Genre?
 
-    form(method='POST')
-      div.form-group
-        input#genreslug.form-control(type='hidden', name='genreslug', value=genre.slug )
+      form(method='POST')
+        div
+          input#genreslug(type='hidden', name='genreslug', value=genre.slug )
 
-      button.btn.btn-primary(type='submit') Delete
+        button.page__action-btn(type='submit') Delete

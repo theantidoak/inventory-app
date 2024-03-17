@@ -67,7 +67,7 @@ exports.developer_create_post = [
 
 exports.developer_delete_get = asyncHandler(async (req, res, next) => {
   const [developer, applicationsByDeveloper] = await Promise.all([
-    Developer.find({ slug: req.params.slug }).exec(),
+    Developer.findOne({ slug: req.params.slug }).exec(),
     Application.find({ 'developer.slug': req.params.slug}).exec()
   ])
 

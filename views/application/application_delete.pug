@@ -2,30 +2,32 @@ extends ../layout
 
 block content
 
-  h1 #{title}: #{application.name}
-  
-  p #[strong Developer: ]
-    a(href=application.developer.url) #{application.developer.name}
-  p #[strong Description: ] #{application.description}
-  p #[strong Rating: ] #{application.rating}
-  p #[strong Price: ] #{application.price}
-  p #[strong Platforms: ]
-    each platform, index in application.platforms
-      span #{platform}
-    if index < application.platforms.length - 1
-      |,&nbsp;
-  p #[strong Genres: ]
-    each genre, index in application.genre
-      a(href=genre.url) #{genre.name}
-      if index < application.genre.length - 1
-       |,&nbsp;
-        
-  hr
+  div.page
+    h1.page__title #{title}: #{application.name}
+    
+    div.page__detail
+      p #[strong Developer: ]
+        a(href=application.developer.url) #{application.developer.name}
+      p #[strong Description: ] #{application.description}
+      p #[strong Rating: ] #{application.rating}
+      p #[strong Price: ] #{application.price}
+      p #[strong Platforms: ]
+        each platform, index in application.platforms
+          span #{platform}
+          if index < application.platforms.length - 1
+            |,&nbsp;
+      p #[strong Genres: ]
+        each genre, index in application.genre
+          a(href=genre.url) #{genre.name}
+          if index < application.genre.length - 1
+          |,&nbsp;
+          
+    hr
 
-  p Do you really want to delete this Application?
+    p Do you really want to delete this Application?
 
-  form(method='POST')
-    div.form-group
-      input#applicationslug.form-control(type='hidden', name='applicationslug', value=application.slug )
+    form(method='POST')
+      div
+        input#applicationslug(type='hidden', name='applicationslug', value=application.slug )
 
-    button.btn.btn-primary(type='submit') Delete
+      button.page__action-btn(type='submit') Delete

@@ -24,6 +24,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   color: var(--primary-color);
+  margin: 1rem 0;
 }
 
 hr {
@@ -87,6 +88,7 @@ main {
 }
 
 .footer {
+  background-color: var(--background-white);
   padding: 0.5rem 0;
   width: 100%;
   margin: 0 auto;
@@ -118,20 +120,21 @@ main {
 }
 
 .page__title {
-  padding: 2rem 0 0;
+  padding: 2rem 0;
   width: fit-content;
   margin: 0 auto;
 }
 .page__items {
-  padding: 3rem 0;
   list-style: none;
   display: grid;
   gap: 1.5rem;
   grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  margin: 2rem 0;
 }
 .page__item {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   transition: all 0.15s linear;
+  max-width: 25rem;
 }
 .page__item:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -144,7 +147,11 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
   text-decoration: none;
+}
+.page__item-link.detail {
+  justify-content: flex-start;
 }
 .page__action-link-container {
   margin: 1rem auto;
@@ -162,12 +169,33 @@ main {
   transition: all 0.15s linear;
   gap: 0.5rem;
   margin: 0 auto;
+  color: #ffffff;
+  background-color: var(--primary-color);
+  border-radius: 5px;
 }
 .page__action-link:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+.page__action-btn {
+  padding: 0.75rem 1rem;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  transition: all 0.15s linear;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  color: #ffffff;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+  border: none;
+}
+.page__action-btn:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 .page__action-svg {
-  fill: var(--primary-color);
+  fill: #ffffff;
   height: 1.5rem;
   width: 1.5rem;
   min-width: 1.5rem;

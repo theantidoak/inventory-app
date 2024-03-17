@@ -2,24 +2,25 @@ extends ../layout
 
 block content
 
-  h1 #{title}: #{developer.name}
+  div.page
+    h1.page__title #{title}: #{developer.name}
 
-  if developer_applications.length
+    if developer_applications.length
 
-    p #[strong Delete the following applications before attempting to delete this developer.]
-    div
-      h4 Applications
-      dl
-        each application in developer_applications
-          dt
-            a(href=application.url) #{application.name}
-          dd #{application.description}
+      p #[strong Delete the following applications before attempting to delete this developer.]
+      div
+        h2 Applications
+        ul.page__items
+          each application in developer_applications
+            li.page__item
+              a.page__item-link(href=application.url) #{application.name}
+                span #{application.description}
 
-  else
-    p Do you really want to delete this Developer?
+    else
+      p Do you really want to delete this Developer?
 
-    form(method='POST')
-      div.form-group
-        input#developerslug.form-control(type='hidden', name='developerslug', value=developer.slug)
+      form(method='POST')
+        div
+          input#developerslug(type='hidden', name='developerslug', value=developer.slug)
 
-      button.btn.btn-primary(type='submit') Delete
+        button.page__action-btn(type='submit') Delete
