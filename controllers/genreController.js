@@ -3,6 +3,8 @@ const Application = require('../models/application');
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require('express-validator');
 const { createSlug } = require('../src/shortcodes');
+const multer  = require('multer')
+const upload = multer();
 
 exports.genre_list = asyncHandler(async (req, res, next) => {
   const allGenres = await Genre.find().sort({ "name": 1}).exec();
@@ -35,6 +37,7 @@ exports.genre_create_get = (req, res, next) => {
 };
 
 exports.genre_create_post = [
+  upload.single('uploaded_file'),
   body("name", "Genre must contain at least 2 characters")
     .trim()
     .isLength({ min: 2 })
@@ -48,7 +51,13 @@ exports.genre_create_post = [
     const errors = validationResult(req);
     const name = req.body.name;
     const slug = createSlug(name);
-    const genre = new Genre({ name: name, slug: slug, description: req.body.description });
+    const genre = new Genre({ 
+      name: name, 
+      slug: slug, 
+      description: req.body.description,
+      image: req.file && req.file.buffer ? req.file.buffer : ''
+    });
+
     if (!errors.isEmpty()) {
       res.render("genre/genre_form", {
         title: "Add Genre",
@@ -119,6 +128,7 @@ exports.genre_update_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.genre_update_post = [
+  upload.single('uploaded_file'),
   body("name", "Genre must contain at least 2 characters")
     .trim()
     .isLength({ min: 2 })
@@ -132,7 +142,12 @@ exports.genre_update_post = [
     const errors = validationResult(req);
     const name = req.body.name;
     const slug = createSlug(name);
-    const genre = new Genre({ name: name, slug: slug, description: req.body.description });
+    const genre = new Genre({ 
+      name: name, 
+      slug: slug, 
+      description: req.body.description,
+      image: req.file && req.file.buffer ? req.file.buffer : ''
+    });
     if (!errors.isEmpty()) {
       res.render("genre/genre_form", {
         title: "Update Genre",
@@ -145,6 +160,9 @@ exports.genre_update_post = [
       const { _id, ...modifiedGenre } = genre._doc;
       const searchSlug = genreExists ? slug : req.params.slug;
       const genreField = genreExists ? { 'genre.$[]._id': genreExists._id, 'genre.$[].slug': genreExists.slug } : { 'genre.$[].slug': slug };
+      if (req.body.remove_image === "on") {
+        modifiedGenre.image = ''
+      }
       const [ updatedGenre, updatedApplications] = await Promise.all([
         Genre.findOneAndUpdate({ slug: searchSlug }, modifiedGenre, { new: true }).exec(),
         Application.updateMany({ 'genre.slug': req.params.slug }, { $set: genreField }).exec()

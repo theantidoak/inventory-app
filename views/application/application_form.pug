@@ -3,7 +3,7 @@ extends ../layout
 block content
   h1= title
 
-  form.form(method='POST')
+  form.form(method='POST' enctype="multipart/form-data")
     div.form__group
       label(for='name') Name:
       input#name.form-control(type='text', placeholder='Name of application' name='name' required value=(application===undefined ? '' : application.name) )
@@ -48,6 +48,17 @@ block content
             else
               input.checkbox-input(type='checkbox', name='genre', id=genre.slug, value=genre._id + '|' + genre.slug)
             label(for=genre.slug) #{genre.name}
+    div.form__group
+      label Image:
+      input(type="file" name="uploaded_file" id="upload-application-file")
+      if application && application.img
+        div.form__uploaded-img-container.shown
+          img#application-image-id(src=`data:image/svg+xml;base64,${application.img}` alt="Your uploaded image")
+      else
+        div.form__uploaded-img-container
+          img#application-image-id(src="#" alt="Placeholder image")
+      label Delete Image
+      input(type="checkbox" name="remove_image")
     button.btn.btn-primary(type='submit') Submit
 
   if errors

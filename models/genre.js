@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 const GenreSchema = new Schema({
   name: { type: String, required: true },
   slug: { type: String, required: true },
-  description: { type: String, required: true }
+  description: { type: String, required: true },
+  image: { type: Buffer }
 });
 
 GenreSchema.pre('save', function(next) {
@@ -37,6 +38,10 @@ GenreSchema.pre('findOneAndUpdate', function(next) {
 
 GenreSchema.virtual("url").get(function() {
   return `/genres/${this.slug}`;
+});
+
+GenreSchema.virtual("img").get(function () {
+  return this.image && this.image != '' ? this.image.toString('base64') : null
 });
 
 module.exports = mongoose.model("Genre", GenreSchema);

@@ -3,6 +3,8 @@ const Application = require('../models/application');
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require('express-validator');
 const { createSlug } = require('../src/shortcodes');
+const multer  = require('multer')
+const upload = multer();
 
 exports.developer_list = asyncHandler(async (req, res, next) => {
   const allDevelopers = await Developer.find().sort({ "name": 1}).exec();
@@ -36,6 +38,7 @@ exports.developer_create_get = (req, res, next) => {
 };
 
 exports.developer_create_post = [
+  upload.single('uploaded_file'),
   body("name", "Developer name must not be empty")
     .trim()
     .isLength({ min: 1 })
@@ -44,7 +47,11 @@ exports.developer_create_post = [
     const errors = validationResult(req);
     const name = req.body.name;
     const slug = createSlug(name);
-    const developer = new Developer({ name: name, slug: slug });
+    const developer = new Developer({ 
+      name: name, 
+      slug: slug,
+      image: req.file && req.file.buffer ? req.file.buffer : '' 
+    });
 
     if (!errors.isEmpty()) {
       res.render("application_form", {
@@ -116,6 +123,7 @@ exports.developer_update_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.developer_update_post = [
+  upload.single('uploaded_file'),
   body("name", "Developer name must not be empty")
     .trim()
     .isLength({ min: 1 })
@@ -124,7 +132,11 @@ exports.developer_update_post = [
     const errors = validationResult(req);
     const name = req.body.name;
     const slug = createSlug(name);
-    const developer = new Developer({ name: name, slug: slug });
+    const developer = new Developer({ 
+      name: name, 
+      slug: slug,
+      image: req.file && req.file.buffer ? req.file.buffer : ''
+    });
 
     if (!errors.isEmpty()) {
       res.render("application_form", {
@@ -138,6 +150,9 @@ exports.developer_update_post = [
       const { _id, ...modifiedDev } = developer._doc;
       const searchSlug = developerExists ? slug : req.params.slug;
       const developerField = developerExists ? { 'developer._id': developerExists._id, 'developer.slug': developerExists.slug } : { 'developer.slug': slug };
+      if (req.body.remove_image === "on") {
+        modifiedDev.image = ''
+      }
       const [ updatedDeveloper, updatedApplications] = await Promise.all([
         Developer.findOneAndUpdate({ slug: searchSlug }, modifiedDev, { new: true }).exec(),
         Application.updateMany({ 'developer.slug': req.params.slug }, { $set: developerField }).exec()

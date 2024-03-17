@@ -16,7 +16,8 @@ const ApplicationSchema = new Schema({
     _id: { type: Schema.Types.ObjectId, ref: "Genre", required: true },
     slug: { type: String, required: true },
   }],
-  platforms: [{ type: String, required: true }]
+  platforms: [{ type: String, required: true }],
+  image: { type: Buffer }
 })
 
 ApplicationSchema.pre('save', function(next) {
@@ -48,6 +49,10 @@ ApplicationSchema.pre('findOneAndUpdate', function(next) {
 
 ApplicationSchema.virtual("url").get(function () {
   return `/applications/${this.slug}`;
+});
+
+ApplicationSchema.virtual("img").get(function () {
+  return this.image && this.image != '' ? this.image.toString('base64') : null
 });
 
 module.exports = mongoose.model("Application", ApplicationSchema)

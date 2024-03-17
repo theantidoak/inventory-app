@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 
 const DeveloperSchema = new Schema({
   name: { type: String, required: true },
-  slug: { type: String, required: true }
+  slug: { type: String, required: true },
+  image: { type: Buffer }
 })
 
 DeveloperSchema.pre('save', function(next) {
@@ -37,5 +38,9 @@ DeveloperSchema.pre('findOneAndUpdate', function(next) {
 DeveloperSchema.virtual("url").get(function() {
   return `/developers/${this.slug}`;
 })
+
+DeveloperSchema.virtual("img").get(function () {
+  return this.image && this.image != '' ? this.image.toString('base64') : null
+});
 
 module.exports = mongoose.model("Developer", DeveloperSchema);

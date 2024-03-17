@@ -4,13 +4,24 @@ block content
 
   h1 #{title}
 
-  form.form(method='POST')
+  form.form(method='POST' enctype="multipart/form-data")
     div.form__group
       label(for='name') Genre:
       input#name.form-control(type='text', placeholder='Technology, Games, etc.' name='name' value=(genre===undefined ? '' : genre.name) required)
     div.form__group
       label(for='description') Description:
       textarea#description.form-control(placeholder='Description' name='description' required)= genre === undefined ? '' : genre.description
+    div.form__group
+      label Image:
+      input(type="file" name="uploaded_file" id="upload-genre-file")
+      if genre && genre.img
+        div.form__uploaded-img-container.shown
+          img#genre-image-id(src=`data:image/svg+xml;base64,${genre.img}` alt="Your uploaded image")
+      else
+        div.form__uploaded-img-container
+          img#genre-image-id(src="#" alt="Placeholder image")
+      label Delete Image
+      input(type="checkbox" name="remove_image")
     button.btn.btn-primary(type='submit') Submit
 
   if errors

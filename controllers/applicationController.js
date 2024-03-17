@@ -4,6 +4,8 @@ const Genre = require('../models/genre');
 const { body, validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler');
 const { createSlug } = require('../src/shortcodes');
+const multer  = require('multer')
+const upload = multer();
 
 exports.index = asyncHandler(async (req, res, next) => {
   const [
@@ -66,6 +68,7 @@ exports.application_create_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.application_create_post = [
+  upload.single('uploaded_file'),
   body("name", "Name must not be empty")
     .trim().isLength({ min: 1 }).escape(),
   body("developer", "Developer must not be empty")
@@ -116,7 +119,8 @@ exports.application_create_post = [
       rating: req.body.rating == '' ? 0 : +req.body.rating,
       price: req.body.price == '' ? 0 : +req.body.price,
       genre: genres,
-      platforms: [].concat(req.body.platforms)
+      platforms: [].concat(req.body.platforms),
+      image: req.file && req.file.buffer ? req.file.buffer : ''
     });
 
     if (!errors.isEmpty()) {
@@ -188,7 +192,7 @@ exports.application_update_get = asyncHandler(async (req, res, next) => {
   ]);
 
   res.render('application/application_form', {
-    title: 'Add Application',
+    title: 'Update Application',
     application: application,
     developers: allDevelopers,
     genres: allGenres
@@ -196,6 +200,7 @@ exports.application_update_get = asyncHandler(async (req, res, next) => {
 });
 
 exports.application_update_post = [
+  upload.single('uploaded_file'),
   body("name", "Name must not be empty")
     .trim().isLength({ min: 1 }).escape(),
   body("developer", "Developer must not be empty")
@@ -247,7 +252,8 @@ exports.application_update_post = [
       rating: req.body.rating == '' ? 0 : +req.body.rating,
       price: req.body.price == '' ? 0 : +req.body.price,
       genre: genres,
-      platforms: [].concat(req.body.platforms)
+      platforms: [].concat(req.body.platforms),
+      image: req.file && req.file.buffer ? req.file.buffer : ''
     });
 
     if (!errors.isEmpty()) {
@@ -279,6 +285,9 @@ exports.application_update_post = [
       const numApplications = applicationsExist ? '-' + (applications.length + 1) : '';
       modifiedApp.slug = sameApp ? modifiedApp.slug : createSlug(name + `${numApplications}`);
       const searchSlug = sameApp ? modifiedApp.slug : req.params.slug;
+      if (req.body.remove_image === "on") {
+        modifiedApp.image = ''
+      }
       const updatedApplication = await Application.findOneAndUpdate({ slug: searchSlug }, modifiedApp, { new: true }).exec();
       res.redirect(updatedApplication.url);
     }

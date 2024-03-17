@@ -35,7 +35,7 @@ hr {
   margin: 1rem 0;
 }
 
-heading {
+header {
   position: absolute;
   width: 100%;
 }
@@ -255,6 +255,7 @@ main {
 
   &__group {
     display: flex;
+    flex-wrap: wrap;
     gap: .5rem;
     align-items: center;
 
@@ -262,20 +263,40 @@ main {
       width: 5.5rem;
     }
 
-    input:not(input[type="checkbox"]), select, textarea {
+    input:not(input[type="checkbox"]):not(input[type="file"]), select, textarea {
       padding: .25rem .5rem;
       background-color: var(--background-white);
+      color: var(--color-black);
       border: none;
-      width: clamp(8rem, calc(100% - 5.5rem), 16rem);
+      width: clamp(8rem, 100%, 20rem);
     }
   }
   
+  &__uploaded-img-container {
+    background-color: var(--background-white);
+    display: none;
+    width: 100%;
+    padding: 1rem;
+
+    &.shown {
+      display: block;
+    }
+
+    img {
+      width: clamp(8rem, 100%, 16rem);
+      height: auto;
+      margin: 0 auto;
+      display: block;
+      color: var(--color-black);
+    }
+  }
+
   button {
     padding: .5rem .75rem;
     border-radius: 5px;
     border: none;
     width: fit-content;
-    margin: 0 auto;
+    margin: 1rem auto 0;
     cursor: pointer;
     background-color: var(--background-white);
   }

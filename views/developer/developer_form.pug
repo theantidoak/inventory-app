@@ -3,10 +3,21 @@ extends ../layout
 block content
   h1=title
 
-  form.form(method='POST')
+  form.form(method='POST' enctype="multipart/form-data")
     div.form__group
       label(for='first_name') Name:
       input#first_name.form-control(type='text', placeholder='Name' name='name' required value=(developer===undefined ? '' : developer.name) )
+    div.form__group
+      label Image:
+      input(type="file" name="uploaded_file" id="upload-developer-file")
+      if developer && developer.img
+        div.form__uploaded-img-container.shown
+          img#developer-image-id(src=`data:image/svg+xml;base64,${developer.img}` alt="Your uploaded image")
+      else
+        div.form__uploaded-img-container
+          img#developer-image-id(src="#" alt="Placeholder image")
+      label Delete Image
+      input(type="checkbox" name="remove_image")
     button.btn.btn-primary(type='submit') Submit
 
   if errors
