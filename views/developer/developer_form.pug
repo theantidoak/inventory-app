@@ -9,7 +9,7 @@ block content
       input#first_name(type='text', placeholder='Name' name='name' required value=(developer===undefined ? '' : developer.name) )
     div.form__group
       label Image:
-      input(type="file"accept="image/*" name="uploaded_file" id="upload-developer-file")
+      input(type="file" accept="image/*" name="uploaded_file" id="upload-developer-file")
       if developer && developer.img
         div.form__uploaded-img-container.shown
           img#developer-image-id(src=`data:${developer.img_mimetype};base64,${developer.img}` alt="Your uploaded image")
