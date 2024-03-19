@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 const DeveloperSchema = new Schema({
   name: { type: String, required: true },
   slug: { type: String, required: true },
-  image: { type: Buffer }
+  image: { type: Buffer },
+  img_mimetype: { type: String }
 })
 
 DeveloperSchema.pre('save', function(next) {

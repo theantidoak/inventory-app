@@ -8,7 +8,7 @@ block content
     div.page__detail
       if application && application.img
         div.page__uploaded-img-container.shown
-          img#application-image-id(src=`data:image/svg+xml;base64,${application.img}` alt="Your uploaded image")
+          img#application-image-id(src=`data:${application.img_mimetype};base64,${application.img}` alt="Your uploaded image")
       else
         div.page__uploaded-img-container
           img#application-image-id(src="#" alt="Placeholder image")

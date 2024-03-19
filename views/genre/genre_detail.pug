@@ -6,7 +6,7 @@ block content
     h1.page__title Genre: #{genre.name}
     if genre && genre.img
       div.page__uploaded-img-container.shown
-        img#genre-image-id(src=`data:image/svg+xml;base64,${genre.img}` alt="Your uploaded image")
+        img#genre-image-id(src=`data:${genre.img_mimetype};base64,${genre.img}` alt="Your uploaded image")
     else
       div.page__uploaded-img-container
         img#genre-image-id(src="#" alt="Placeholder image")

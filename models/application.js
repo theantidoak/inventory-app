@@ -17,7 +17,8 @@ const ApplicationSchema = new Schema({
     slug: { type: String, required: true },
   }],
   platforms: [{ type: String, required: true }],
-  image: { type: Buffer }
+  image: { type: Buffer },
+  img_mimetype: { type: String }
 })
 
 ApplicationSchema.pre('save', function(next) {

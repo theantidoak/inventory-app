@@ -6,7 +6,8 @@ const GenreSchema = new Schema({
   name: { type: String, required: true },
   slug: { type: String, required: true },
   description: { type: String, required: true },
-  image: { type: Buffer }
+  image: { type: Buffer },
+  img_mimetype: { type: String }
 });
 
 GenreSchema.pre('save', function(next) {

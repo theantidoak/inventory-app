@@ -113,6 +113,8 @@ exports.application_create_post = [
       return {_id: genre[0], slug: genre[1] }
     });
 
+    console.log(req.file);
+
     const application = new Application({
       name: name,
       slug: slug,
@@ -122,7 +124,8 @@ exports.application_create_post = [
       price: req.body.price == '' ? 0 : +req.body.price,
       genre: genres,
       platforms: [].concat(req.body.platforms),
-      image: req.file && req.file.buffer ? req.file.buffer : ''
+      image: req.file && req.file.buffer ? req.file.buffer : '',
+      img_mimetype: req.file && req.file.mimetype ? req.file.mimetype : ''
     });
 
     if (!errors.isEmpty()) {
@@ -256,7 +259,8 @@ exports.application_update_post = [
       price: req.body.price == '' ? 0 : +req.body.price,
       genre: genres,
       platforms: [].concat(req.body.platforms),
-      image: req.file && req.file.buffer ? req.file.buffer : ''
+      image: req.file && req.file.buffer ? req.file.buffer : '',
+      img_mimetype: req.file && req.file.mimetype ? req.file.mimetype : ''
     });
 
     if (!errors.isEmpty()) {

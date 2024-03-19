@@ -50,10 +50,10 @@ block content
             label(for=genre.slug) #{genre.name}
     div.form__group
       label Image:
-      input(type="file" name="uploaded_file" id="upload-application-file")
+      input(type="file" accept="image/*" name="uploaded_file" id="upload-application-file")
       if application && application.img
         div.form__uploaded-img-container.shown
-          img#application-image-id(src=`data:image/svg+xml;base64,${application.img}` alt="Your uploaded image")
+          img#application-image-id(src=`data:${application.img_mimetype};base64,${application.img}` alt="Your uploaded image")
       else
         div.form__uploaded-img-container
           img#application-image-id(src="#" alt="Placeholder image")

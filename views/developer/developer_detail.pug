@@ -8,7 +8,7 @@ block content
     div
       if developer && developer.img
         div.page__uploaded-img-container.shown
-          img#developer-image-id(src=`data:image/svg+xml;base64,${developer.img}` alt="Your uploaded image")
+          img#developer-image-id(src=`data:${developer.img_mimetype};base64,${developer.img}` alt="Your uploaded image")
       else
         div.page__uploaded-img-container
           img#developer-image-id(src="#" alt="Placeholder image")

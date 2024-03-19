@@ -56,7 +56,8 @@ exports.genre_create_post = [
       name: name, 
       slug: slug, 
       description: req.body.description,
-      image: req.file && req.file.buffer ? req.file.buffer : ''
+      image: req.file && req.file.buffer ? req.file.buffer : '',
+      img_mimetype: req.file && req.file.mimetype ? req.file.mimetype : ''
     });
 
     if (!errors.isEmpty()) {
@@ -148,7 +149,8 @@ exports.genre_update_post = [
       name: name, 
       slug: slug, 
       description: req.body.description,
-      image: req.file && req.file.buffer ? req.file.buffer : ''
+      image: req.file && req.file.buffer ? req.file.buffer : '',
+      img_mimetype: req.file && req.file.mimetype ? req.file.mimetype : ''
     });
     if (!errors.isEmpty()) {
       res.render("genre/genre_form", {

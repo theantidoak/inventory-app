@@ -13,10 +13,10 @@ block content
       textarea#description(placeholder='Description' name='description' required)= genre === undefined ? '' : genre.description
     div.form__group
       label Image:
-      input(type="file" name="uploaded_file" id="upload-genre-file")
+      input(type="file" accept="image/*" name="uploaded_file" id="upload-genre-file")
       if genre && genre.img
         div.form__uploaded-img-container.shown
-          img#genre-image-id(src=`data:image/svg+xml;base64,${genre.img}` alt="Your uploaded image")
+          img#genre-image-id(src=`data:${genre.img_mimetype};base64,${genre.img}` alt="Your uploaded image")
       else
         div.form__uploaded-img-container
           img#genre-image-id(src="#" alt="Placeholder image")

@@ -51,7 +51,8 @@ exports.developer_create_post = [
     const developer = new Developer({ 
       name: name, 
       slug: slug,
-      image: req.file && req.file.buffer ? req.file.buffer : '' 
+      image: req.file && req.file.buffer ? req.file.buffer : '',
+      img_mimetype: req.file && req.file.mimetype ? req.file.mimetype : ''
     });
 
     if (!errors.isEmpty()) {
@@ -137,7 +138,8 @@ exports.developer_update_post = [
     const developer = new Developer({ 
       name: name, 
       slug: slug,
-      image: req.file && req.file.buffer ? req.file.buffer : ''
+      image: req.file && req.file.buffer ? req.file.buffer : '',
+      img_mimetype: req.file && req.file.mimetype ? req.file.mimetype : ''
     });
 
     if (!errors.isEmpty()) {
